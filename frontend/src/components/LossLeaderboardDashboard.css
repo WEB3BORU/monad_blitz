@@ -1,0 +1,17 @@
+.loss-leaderboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin: 40px 0 32px 0;
+}
+
+@media (max-width: 900px) {
+  .loss-leaderboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .loss-leaderboard-grid {
+    grid-template-columns: 1fr;
+  }
+} 
