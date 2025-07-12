@@ -223,7 +223,7 @@ async def test_token_creation():
         
         # 더미 데이터 생성
         wallet_info = create_dummy_wallet_info()
-        token_name = f"{wallet_info['ticker']} Loss Token"
+        token_name = "seoulmonad"  # 토큰 이름을 seoulmonad로 변경
         token_symbol = f"{wallet_info['ticker']}LOSS"
         total_supply = 1000000  # 100만 토큰
         
