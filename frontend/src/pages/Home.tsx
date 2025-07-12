@@ -17,32 +17,32 @@ const Home: React.FC = () => {
     {
       address: '0xA1b2...C3d4',
       lossAmount: 980,
-      topTickers: ['BTC', 'ARB', 'DOGE'],
+      topTickers: ['LINK', 'ARB', 'MATIC'],
     },
     {
       address: '0xFfE2...9aBc',
       lossAmount: 2100,
-      topTickers: ['SOL', 'MATIC', 'OP'],
+      topTickers: ['SHIB', 'MATIC', 'OP'],
     },
     {
       address: '0x1234...5678',
       lossAmount: 450,
-      topTickers: ['XRP', 'SHIB', 'UNI'],
+      topTickers: ['AVAX', 'SHIB', 'UNI'],
     },
     {
       address: '0x9e8d...7c6b',
       lossAmount: 3200,
-      topTickers: ['AVAX', 'LINK', 'SUI'],
+      topTickers: ['ARB', 'LINK', 'PEPE'],
     },
     {
       address: '0xBEEF...CAFE',
       lossAmount: 1750,
-      topTickers: ['DOGE', 'PEPE', 'ARB'],
+      topTickers: ['ETH', 'PEPE', 'ARB'],
     },
     {
       address: '0xDEAD...BEEF',
       lossAmount: 600,
-      topTickers: ['BTC', 'ETH', 'SOL'],
+      topTickers: ['OP', 'ETH', 'UNI'],
     },
   ];
   return (

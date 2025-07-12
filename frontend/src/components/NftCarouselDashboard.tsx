@@ -1,12 +1,12 @@
 import React from 'react';
 import pepeImg from '../assets/pepe_graves.png';
-import dogeImg from '../assets/doge_graves.png';
+import shibImg from '../assets/shib_graves.png';
 import ethImg from '../assets/eth_graves.png';
 import './NftCarouselDashboard.css';
 
 const nfts = [
   { name: 'PEPE Graves', image: pepeImg, desc: 'PEPE NFT', id: 1 },
-  { name: 'DOGE Graves', image: dogeImg, desc: 'DOGE NFT', id: 2 },
+  { name: 'SHIB Graves', image: shibImg, desc: 'SHIB NFT', id: 2 },
   { name: 'ETH Graves', image: ethImg, desc: 'ETH NFT', id: 3 },
 ];
 

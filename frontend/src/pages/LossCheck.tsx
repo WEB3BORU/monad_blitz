@@ -79,8 +79,8 @@ const LossCheck: React.FC = () => {
           totalSoldUSD: 1500
         },
         {
-          symbol: 'DOGE',
-          name: 'Dogecoin',
+          symbol: 'LINK',
+          name: 'Chainlink',
           lossAmount: -800,
           lossPercentage: -18.2,
           lastTradeDate: '2025-07-06',
