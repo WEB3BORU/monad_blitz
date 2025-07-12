@@ -1,0 +1,21 @@
+.header-wallet {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.wallet-address-btn, .losscheck-btn {
+  background: linear-gradient(90deg, #4f8cff 0%, #6e6bff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.wallet-address-btn:hover, .losscheck-btn:hover {
+  background: linear-gradient(90deg, #6e6bff 0%, #4f8cff 100%);
+  box-shadow: 0 4px 16px rgba(79,140,255,0.16);
+} 
