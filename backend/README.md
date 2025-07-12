@@ -37,7 +37,7 @@ cp env.example .env
 ### 4. Docker 컨테이너 실행
 
 ```bash
-# PostgreSQL, Redis, pgAdmin 컨테이너 시작
+# PostgreSQL 컨테이너 시작
 docker-compose up -d
 
 # 컨테이너 상태 확인
@@ -51,9 +51,6 @@ docker-compose logs -f
 
 ```bash
 # 개발 모드
-python run.py
-
-# 또는
 uvicorn app.main:app --reload
 
 # 프로덕션 모드
@@ -63,27 +60,16 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ## Docker 서비스
 
 ### PostgreSQL
-- **포트**: 5432
-- **데이터베이스**: crypto_graves
-- **사용자**: crypto_user
-- **비밀번호**: crypto_password_123
-
-### Redis
-- **포트**: 6379
-- **용도**: 캐싱, 세션 저장
-
-### pgAdmin (선택사항)
-- **포트**: 5050
-- **이메일**: admin@cryptograves.com
-- **비밀번호**: admin_password_123
-- **URL**: http://localhost:5050
+- **포트**: ${POSTGRES_PORT}
+- **데이터베이스**: ${POSTGRES_DB}
+- **사용자**: ${POSTGRES_USER}
 
 ## API 문서
 
 서버 실행 후 다음 URL에서 API 문서를 확인할 수 있습니다:
 
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+- Swagger UI: http://localhost:${SERVER_PORT}/docs
+- ReDoc: http://localhost:${SERVER_PORT}/redoc
 
 ## 주요 엔드포인트
 
@@ -97,21 +83,22 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 - `GET /api/v1/losses/{loss_id}` - 특정 손실 데이터 조회
 - `PUT /api/v1/losses/{loss_id}` - 손실 데이터 업데이트
 - `POST /api/v1/losses/{loss_id}/verify` - 손실 데이터 검증
+- `POST /api/v1/losses/upload-transaction` - 트랜잭션 데이터 업로드
 
 ## 데이터베이스 스키마
 
 ### users 테이블
 - id (int, primary key)
 - uuid (uuid, unique)
-- wallet_address (text, unique)
-- username (text, nullable)
-- email (text, nullable)
+- wallet_address (varchar(42), unique)
+- username (varchar(100), nullable)
+- email (varchar(255), nullable)
 - role (enum: user, admin, moderator)
-- total_loss (decimal, default 0)
-- total_gain (decimal, default 0)
+- total_loss (decimal(20,8))
+- total_gain (decimal(20,8))
 - profile_image_url (text, nullable)
 - bio (text, nullable)
-- is_active (boolean, default true)
+- is_active (boolean)
 - created_at (timestamp)
 - updated_at (timestamp)
 
@@ -120,19 +107,19 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 - uuid (uuid, unique)
 - user_id (int, foreign key)
 - user_uuid (uuid, foreign key)
-- asset_name (text)
-- asset_ticker (text)
-- loss_amount (decimal)
-- loss_amount_mon (decimal)
-- transaction_hash (text)
+- asset_name (varchar(100))
+- asset_ticker (varchar(20))
+- loss_amount (decimal(20,8))
+- loss_amount_mon (decimal(20,8))
+- transaction_hash (varchar(66))
 - transaction_data (jsonb)
 - signature (text)
 - status (enum: pending, verified, rejected)
 - verified_at (timestamp, nullable)
-- verified_by (int, nullable)
-- verified_by_uuid (uuid, nullable)
+- verified_by (int, foreign key, nullable)
+- verified_by_uuid (uuid, foreign key, nullable)
 - nft_token_id (int, nullable)
-- nft_contract_address (text, nullable)
+- nft_contract_address (varchar(42), nullable)
 - notes (text, nullable)
 - created_at (timestamp)
 - updated_at (timestamp)
@@ -142,27 +129,15 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 - uuid (uuid, unique)
 - user_id (int, foreign key)
 - user_uuid (uuid, foreign key)
-- period_type (text) - daily, weekly, monthly
-- period_date (date)
-- total_loss (decimal)
-- total_gain (decimal)
-- net_pnl (decimal)
+- period_type (enum: daily, weekly, monthly)
+- period_start (timestamp)
+- period_end (timestamp)
+- total_loss (decimal(20,8))
 - rank_position (int)
+- reward_amount (decimal(20,8), nullable)
+- reward_paid (boolean)
 - created_at (timestamp)
-
-### nfts 테이블
-- id (int, primary key)
-- uuid (uuid, unique)
-- loss_id (int, foreign key)
-- loss_uuid (uuid, foreign key)
-- token_id (int)
-- contract_address (text)
-- metadata_uri (text, nullable)
-- image_url (text, nullable)
-- name (text)
-- description (text, nullable)
-- attributes (jsonb, nullable)
-- created_at (timestamp)
+- updated_at (timestamp)
 
 ### trades 테이블
 - id (int, primary key)
@@ -187,18 +162,9 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 # Database Configuration (PostgreSQL)
 POSTGRES_DB=crypto_graves
 POSTGRES_USER=crypto_user
-POSTGRES_PASSWORD=crypto_password_123
+POSTGRES_PASSWORD=your_secure_password
 POSTGRES_PORT=5432
-DATABASE_URL=postgresql://crypto_user:crypto_password_123@localhost:5432/crypto_graves
-
-# Redis Configuration
-REDIS_PORT=6379
-REDIS_URL=redis://localhost:6379
-
-# pgAdmin Configuration (Optional)
-PGADMIN_EMAIL=admin@cryptograves.com
-PGADMIN_PASSWORD=admin_password_123
-PGADMIN_PORT=5050
+DATABASE_URL=postgresql://crypto_user:your_secure_password@localhost:5432/crypto_graves
 
 # Web3 Configuration
 MONAD_RPC_URL=https://rpc.testnet.monad.xyz
@@ -213,6 +179,10 @@ PRIVATE_KEY=your_private_key_for_contract_deployment
 # API Configuration
 API_V1_STR=/api/v1
 PROJECT_NAME=Crypto Graves API
+
+# Server Configuration
+SERVER_HOST=0.0.0.0
+SERVER_PORT=8000
 
 # File Storage
 UPLOAD_DIR=./uploads
@@ -231,10 +201,7 @@ LOG_LEVEL=info
 ### 데이터베이스 관리
 ```bash
 # PostgreSQL에 직접 연결
-docker exec -it crypto_graves_postgres psql -U crypto_user -d crypto_graves
-
-# pgAdmin 접속
-# 브라우저에서 http://localhost:5050 접속
+docker exec -it crypto_graves_postgres psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 ```
 
 ### 컨테이너 관리
@@ -268,8 +235,7 @@ docker-compose up -d
 ```env
 # .env 파일에서 포트 변경
 POSTGRES_PORT=5433
-REDIS_PORT=6380
-PGADMIN_PORT=5051
+SERVER_PORT=8001
 ```
 
 ## POC 인증 방식
