@@ -1,0 +1,116 @@
+.loss-leaderboard-card {
+  background: #232634;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  padding: 24px 28px 18px 28px;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  min-width: 0;
+  transition: box-shadow 0.18s, border 0.18s;
+}
+.card-gold {
+  border: 2.5px solid #ffd700;
+  box-shadow: 0 4px 24px rgba(255,215,0,0.10);
+}
+.card-silver {
+  border: 2.5px solid #bfc1c6;
+  box-shadow: 0 4px 24px rgba(191,193,198,0.10);
+}
+.card-bronze {
+  border: 2.5px solid #cd7f32;
+  box-shadow: 0 4px 24px rgba(205,127,50,0.10);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.rank-badge {
+  display: inline-block;
+  min-width: 28px;
+  height: 28px;
+  background: #191c23;
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-align: center;
+  line-height: 28px;
+  border: 2px solid #444;
+}
+.rank-1 {
+  background: #ffd700;
+  color: #232634;
+  border-color: #ffd700;
+}
+.rank-2 {
+  background: #bfc1c6;
+  color: #232634;
+  border-color: #bfc1c6;
+}
+.rank-3 {
+  background: #cd7f32;
+  color: #232634;
+  border-color: #cd7f32;
+}
+.profile-circle {
+  width: 32px;
+  height: 32px;
+  background: #2e3140;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+}
+.address {
+  font-family: 'Courier New', monospace;
+  color: #bdbdbd;
+  font-size: 0.98rem;
+}
+.card-main {
+  margin-bottom: 10px;
+  width: 100%;
+}
+.loss-rate {
+  color: #ff4d6d;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.loss-amount {
+  color: #ff4d6d;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.top-tickers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ticker-badge {
+  background: #2e3140;
+  color: #ffb84d;
+  border-radius: 8px;
+  padding: 2px 10px;
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+.card-footer {
+  margin-top: 6px;
+  font-size: 0.92rem;
+  color: #bdbdbd;
+}
+.last-trade {
+  font-size: 0.92rem;
+  color: #bdbdbd;
+} 
