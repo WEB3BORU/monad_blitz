@@ -1,0 +1,84 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+project: Crypto Graves
+
+description: >
+  "Crypto Graves"는 Web3 자산에서 손실 본 경험을 희화화하고 기록할 수 있는 DApp입니다.
+  사용자는 손실 내역을 증명하고, 이를 NFT/밈 자산으로 발행하고, 유저 간 거래하거나 랭킹 보상 경쟁에 참여할 수 있습니다.
+  메인 컨셉은 "진짜 다 잃었다"는 감정을 Web3 상에서 공유하고 커뮤니티화하는 것입니다.
+
+stack:
+  backend: Python (FastAPI)
+  frontend: React + TypeScript
+  web3: Solidity (Monad EVM 호환)
+  database: Supabase (PostgreSQL)
+
+modules:
+  - id: F01
+    name: 손실 자산 등록 및 검증
+    onChain: true
+    offChain: true
+    desc: 사용자가 실제 잃은 자산의 트랜잭션 데이터를 업로드하고 서명하여 등록함. 손실 검증 후 PNL 계산.
+
+  - id: F02
+    name: 손실 NFT/밈 자산 발행
+    onChain: true
+    desc: 증명된 손실 데이터를 바탕으로 NFT 또는 토큰 발행. 자산명, 티커, 손실량 등 메타데이터 포함.
+
+  - id: F03
+    name: 발행 자산 유저 간 거래
+    onChain: true
+    desc: 밈 자산 또는 NFT를 실제 해당 자산을 거래한 유저만 구매 가능. 거래소 스마트 컨트랙트 활용.
+
+  - id: F04
+    name: 손실 랭킹 시스템
+    offChain: true
+    desc: MON 기준 PNL 계산 후 일/주/월 랭킹을 제공. API 호출 기반.
+
+  - id: F05
+    name: 랭킹 보상 지급
+    onChain: true
+    desc: 주기별 손실왕들에게 MON 또는 NFT 등 보상 지급. 스마트 컨트랙트 기반 혹은 관리자 서명 방식.
+
+  - id: F06
+    name: 프로필/자산 내역 조회
+    offChain: true
+    desc: 유저가 보유한 밈/NFT 및 PNL 내역, 손실 기록 열람.
+
+  - id: F07
+    name: Web3 로그인 및 인증
+    onChain: true
+    desc: Metamask 등 Web3 지갑을 통해 서명 기반 인증.
+
+  - id: F08
+    name: NFT 이미지 자동 생성
+    offChain: true
+    desc: 손실 내역 기반 밈 이미지 자동 생성 및 Storage 업로드. 서버에서 처리.
+
+  - id: F09
+    name: 텔레그램 봇 연동
+    offChain: true
+    optional: true
+    desc: 자산 민트, 랭킹 조회 등의 봇 명령어 기능 제공 (확장 모듈)
+
+env:
+  testnet: Monad
+  deployTarget: Monad 테스트넷 (RPC 설정 .env로 구성)
+  supabase_url: (별도 설정)
+  supabase_key: (별도 설정)
+
+directory:
+  backend/: FastAPI 기반 백엔드 API 서버
+  frontend/: React + TypeScript 프론트엔드
+  smart-contracts/: Solidity 기반 스마트 컨트랙트
+  assets/: NFT 이미지 템플릿, 로고 등
+  docs/: 설계 문서 및 API 명세 등 기록용
+
+author:
+  name: BORU
+  handle: @WEB3BORU
+  created: 2025-07-12
+
