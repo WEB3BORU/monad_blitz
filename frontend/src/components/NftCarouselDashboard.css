@@ -1,0 +1,30 @@
+.nft-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 32px 0 24px 0;
+}
+.nft-card {
+  background: #232634;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  padding: 18px 16px;
+  min-width: 220px;
+  max-width: 240px;
+  text-align: center;
+  color: #fff;
+  font-size: 1rem;
+  margin: 0 8px;
+}
+.nft-carousel-arrow {
+  background: none;
+  border: none;
+  color: #6e6bff;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.nft-carousel-arrow:hover {
+  color: #4f8cff;
+} 

@@ -1,0 +1,66 @@
+.loss-summary-dashboard {
+  margin: 16px 0 24px 0;
+  padding: 16px 0;
+  background: #23263a;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.summary-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 24px;
+}
+.summary-item {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+}
+.summary-label {
+  font-size: 0.95em;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+.summary-value {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.summary-value.loss {
+  color: #ff5a5a;
+}
+.top-ticker {
+  display: inline-block;
+  margin: 0 6px;
+  font-weight: bold;
+}
+.ticker-loss {
+  color: #ff5a5a;
+  font-size: 0.95em;
+  margin-left: 2px;
+}
+.summary-cards {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+.summary-card {
+  background: #232634;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  padding: 24px 32px;
+  min-width: 200px;
+  text-align: center;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.summary-card .amount {
+  color: #ff4d6d;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.summary-card .ticker {
+  color: #ffb84d;
+  font-weight: 700;
+} 
