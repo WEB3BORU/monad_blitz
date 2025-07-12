@@ -26,12 +26,26 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create wallet_info table (단순화된 구조)
+CREATE TABLE IF NOT EXISTS wallet_info (
+    id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT uuid_generate_v4() UNIQUE NOT NULL,
+    user_id INTEGER NOT NULL,
+    user_uuid UUID NOT NULL,
+    wallet_address VARCHAR(42) NOT NULL,
+    loss_rate DECIMAL(5, 2) NOT NULL, -- 손실률 (퍼센트, 소수점 2자리)
+    ticker VARCHAR(10) NOT NULL, -- 자산 티커
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(wallet_address, ticker) -- 같은 지갑 주소와 티커 조합은 유일해야 함
+);
+
 -- Create losses table
 CREATE TABLE IF NOT EXISTS losses (
     id SERIAL PRIMARY KEY,
     uuid UUID DEFAULT uuid_generate_v4() UNIQUE NOT NULL,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    user_uuid UUID NOT NULL REFERENCES users(uuid) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL,
+    user_uuid UUID NOT NULL,
     asset_name VARCHAR(100) NOT NULL,
     asset_ticker VARCHAR(20) NOT NULL,
     loss_amount DECIMAL(20, 8) NOT NULL,
@@ -41,8 +55,8 @@ CREATE TABLE IF NOT EXISTS losses (
     signature TEXT NOT NULL,
     status loss_status DEFAULT 'pending',
     verified_at TIMESTAMP WITH TIME ZONE,
-    verified_by INTEGER REFERENCES users(id),
-    verified_by_uuid UUID REFERENCES users(uuid),
+    verified_by INTEGER,
+    verified_by_uuid UUID,
     nft_token_id INTEGER,
     nft_contract_address VARCHAR(42),
     notes TEXT,
@@ -54,8 +68,8 @@ CREATE TABLE IF NOT EXISTS losses (
 CREATE TABLE IF NOT EXISTS rankings (
     id SERIAL PRIMARY KEY,
     uuid UUID DEFAULT uuid_generate_v4() UNIQUE NOT NULL,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    user_uuid UUID NOT NULL REFERENCES users(uuid) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL,
+    user_uuid UUID NOT NULL,
     period_type VARCHAR(20) NOT NULL, -- 'daily', 'weekly', 'monthly'
     period_date DATE NOT NULL,
     total_loss DECIMAL(20, 8) NOT NULL,
@@ -70,8 +84,8 @@ CREATE TABLE IF NOT EXISTS rankings (
 CREATE TABLE IF NOT EXISTS nfts (
     id SERIAL PRIMARY KEY,
     uuid UUID DEFAULT uuid_generate_v4() UNIQUE NOT NULL,
-    loss_id INTEGER NOT NULL REFERENCES losses(id) ON DELETE CASCADE,
-    loss_uuid UUID NOT NULL REFERENCES losses(uuid) ON DELETE CASCADE,
+    loss_id INTEGER NOT NULL,
+    loss_uuid UUID NOT NULL,
     token_id INTEGER NOT NULL,
     contract_address VARCHAR(42) NOT NULL,
     metadata_uri TEXT,
@@ -86,12 +100,12 @@ CREATE TABLE IF NOT EXISTS nfts (
 CREATE TABLE IF NOT EXISTS trades (
     id SERIAL PRIMARY KEY,
     uuid UUID DEFAULT uuid_generate_v4() UNIQUE NOT NULL,
-    seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    seller_uuid UUID NOT NULL REFERENCES users(uuid) ON DELETE CASCADE,
-    buyer_id INTEGER REFERENCES users(id),
-    buyer_uuid UUID REFERENCES users(uuid),
-    nft_id INTEGER NOT NULL REFERENCES nfts(id) ON DELETE CASCADE,
-    nft_uuid UUID NOT NULL REFERENCES nfts(uuid) ON DELETE CASCADE,
+    seller_id INTEGER NOT NULL,
+    seller_uuid UUID NOT NULL,
+    buyer_id INTEGER,
+    buyer_uuid UUID,
+    nft_id INTEGER NOT NULL,
+    nft_uuid UUID NOT NULL,
     price DECIMAL(20, 8) NOT NULL,
     status trade_status DEFAULT 'listed',
     transaction_hash VARCHAR(66),
@@ -102,6 +116,11 @@ CREATE TABLE IF NOT EXISTS trades (
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_wallet_address ON users(wallet_address);
 CREATE INDEX IF NOT EXISTS idx_users_uuid ON users(uuid);
+CREATE INDEX IF NOT EXISTS idx_wallet_info_user_id ON wallet_info(user_id);
+CREATE INDEX IF NOT EXISTS idx_wallet_info_user_uuid ON wallet_info(user_uuid);
+CREATE INDEX IF NOT EXISTS idx_wallet_info_wallet_address ON wallet_info(wallet_address);
+CREATE INDEX IF NOT EXISTS idx_wallet_info_ticker ON wallet_info(ticker);
+CREATE INDEX IF NOT EXISTS idx_wallet_info_uuid ON wallet_info(uuid);
 CREATE INDEX IF NOT EXISTS idx_losses_user_id ON losses(user_id);
 CREATE INDEX IF NOT EXISTS idx_losses_user_uuid ON losses(user_uuid);
 CREATE INDEX IF NOT EXISTS idx_losses_status ON losses(status);
@@ -132,6 +151,9 @@ $$ language 'plpgsql';
 
 -- Create triggers for updated_at
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_wallet_info_updated_at BEFORE UPDATE ON wallet_info
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_losses_updated_at BEFORE UPDATE ON losses
