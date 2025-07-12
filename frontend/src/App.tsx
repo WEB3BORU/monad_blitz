@@ -1,25 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { WagmiProvider } from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { config } from './config/wagmi';
+import Home from './pages/Home';
+import LossCheck from './pages/LossCheck';
 import './App.css';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <div className="App">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/loss-check" element={<LossCheck />} />
+            </Routes>
+          </div>
+        </Router>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
 
