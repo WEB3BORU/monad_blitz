@@ -10,11 +10,6 @@ class Settings(BaseSettings):
     postgres_port: int
     database_url: Optional[str] = None
     
-    # pgAdmin Configuration (Optional)
-    pgadmin_email: str
-    pgadmin_password: str
-    pgadmin_port: int
-    
     # Web3 Configuration
     monad_rpc_url: Optional[str] = None
     monad_chain_id: int
