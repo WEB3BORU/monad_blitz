@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from app.database import get_db
 from app.models.user import UserModel
+from app.models.wallet_info import WalletInfoModel
 import uuid
 from datetime import datetime
 
@@ -14,6 +15,7 @@ class WalletInfoCreateRequest(BaseModel):
     """지갑 정보 생성 요청 모델"""
     wallet_address: str
     loss_rate: float
+    loss_amount: float
     ticker: str
 
 
@@ -21,6 +23,7 @@ class WalletInfoCreateResponse(BaseModel):
     """지갑 정보 생성 응답 모델"""
     wallet_address: str
     loss_rate: float
+    loss_amount: float
     ticker: str
     user_id: int
     user_uuid: str
@@ -31,6 +34,7 @@ class WalletInfoResponse(BaseModel):
     """지갑 정보 응답 모델"""
     wallet_address: str
     loss_rate: float
+    loss_amount: float
     ticker: str
     user_id: int
     user_uuid: str
@@ -49,10 +53,11 @@ async def create_wallet_info(
     db: Session = Depends(get_db)
 ):
     """
-    손실률과 티커 저장
+    손실률, 손실 금액, 티커 저장
     
     - **wallet_address**: 지갑 주소
-    - **loss_rate**: 손실률 (예: 0.15 = 15%)
+    - **loss_rate**: 손실률 (퍼센트, 예: 15.5 = 15.5%)
+    - **loss_amount**: 손실 금액 (MON 기준)
     - **ticker**: 자산 티커 (예: BTC, ETH)
     
     해당 지갑 주소의 사용자가 없으면 자동으로 생성합니다.
@@ -65,11 +70,11 @@ async def create_wallet_info(
                 detail="Invalid wallet address format"
             )
         
-        # 손실률 검증 (0-1 사이)
-        if not 0 <= wallet_info.loss_rate <= 1:
+        # 손실률 검증 (0-100 사이, 퍼센트)
+        if not 0 <= wallet_info.loss_rate <= 100:
             raise HTTPException(
                 status_code=400, 
-                detail="Loss rate must be between 0 and 1"
+                detail="Loss rate must be between 0 and 100 (percentage)"
             )
         
         # 기존 사용자 확인 또는 생성
@@ -87,18 +92,53 @@ async def create_wallet_info(
             db.commit()
             db.refresh(user)
         
-        # 여기서는 간단히 사용자 정보만 반환
-        # 실제로는 별도의 wallet_info 테이블을 만들어야 하지만
-        # 현재 요구사항에 맞춰 사용자 정보에 손실률과 티커를 포함하여 반환
+        # 기존 wallet_info 확인 (같은 지갑 주소와 티커 조합이 있는지)
+        existing_wallet_info = db.query(WalletInfoModel).filter(
+            WalletInfoModel.wallet_address == wallet_info.wallet_address,
+            WalletInfoModel.ticker == wallet_info.ticker
+        ).first()
         
-        return WalletInfoCreateResponse(
-            wallet_address=user.__dict__["wallet_address"],
-            loss_rate=wallet_info.loss_rate,
-            ticker=wallet_info.ticker,
-            user_id=user.__dict__["id"],
-            user_uuid=str(user.uuid),
-            message="Wallet info saved successfully"
-        )
+        if existing_wallet_info:
+            # 기존 데이터 업데이트
+            existing_wallet_info.__dict__["loss_rate"] = wallet_info.loss_rate
+            existing_wallet_info.__dict__["loss_amount"] = wallet_info.loss_amount
+            existing_wallet_info.__dict__["updated_at"] = datetime.utcnow()
+            db.commit()
+            db.refresh(existing_wallet_info)
+            
+            return WalletInfoCreateResponse(
+                wallet_address=existing_wallet_info.__dict__["wallet_address"],
+                loss_rate=existing_wallet_info.__dict__["loss_rate"],
+                loss_amount=existing_wallet_info.__dict__["loss_amount"],
+                ticker=existing_wallet_info.__dict__["ticker"],
+                user_id=existing_wallet_info.__dict__["user_id"],
+                user_uuid=str(existing_wallet_info.user_uuid),
+                message="Wallet info updated successfully"
+            )
+        else:
+            # 새 wallet_info 생성
+            new_wallet_info = WalletInfoModel(
+                uuid=uuid.uuid4(),
+                user_id=user.__dict__["id"],
+                user_uuid=user.uuid,
+                wallet_address=wallet_info.wallet_address,
+                loss_rate=wallet_info.loss_rate,
+                loss_amount=wallet_info.loss_amount,
+                ticker=wallet_info.ticker
+            )
+            db.add(new_wallet_info)
+            db.commit()
+            db.refresh(new_wallet_info)
+            
+            return WalletInfoCreateResponse(
+                wallet_address=new_wallet_info.__dict__["wallet_address"],
+                loss_rate=new_wallet_info.__dict__["loss_rate"],
+                loss_amount=new_wallet_info.__dict__["loss_amount"],
+                ticker=new_wallet_info.__dict__["ticker"],
+                user_id=new_wallet_info.__dict__["user_id"],
+                user_uuid=str(new_wallet_info.user_uuid),
+                message="Wallet info saved successfully"
+            )
         
     except HTTPException:
         raise
@@ -138,25 +178,23 @@ async def get_wallet_info_list(
     별도 테이블 구현 시 추가됩니다.
     """
     try:
-        query = db.query(UserModel)
+        query = db.query(WalletInfoModel)
         
         if wallet_address:
-            query = query.filter(UserModel.wallet_address == wallet_address)
+            query = query.filter(WalletInfoModel.wallet_address == wallet_address)
         
-        users = query.offset(offset).limit(limit).all()
+        wallet_info_records = query.offset(offset).limit(limit).all()
         
-        # 임시로 더미 데이터로 손실률과 티커 정보 생성
-        # 실제 구현 시에는 별도 테이블에서 조회
         wallet_info_list = []
-        for user in users:
-            # 임시 데이터 (실제로는 별도 테이블에서 조회)
+        for record in wallet_info_records:
             wallet_info_list.append(WalletInfoResponse(
-                wallet_address=user.__dict__["wallet_address"],
-                loss_rate=0.15,  # 임시 손실률
-                ticker="BTC",    # 임시 티커
-                user_id=user.__dict__["id"],
-                user_uuid=str(user.uuid),
-                created_at=user.__dict__["created_at"].isoformat() if user.__dict__["created_at"] else ""
+                wallet_address=record.__dict__["wallet_address"],
+                loss_rate=record.__dict__["loss_rate"],
+                loss_amount=record.__dict__["loss_amount"],
+                ticker=record.__dict__["ticker"],
+                user_id=record.__dict__["user_id"],
+                user_uuid=str(record.user_uuid),
+                created_at=record.__dict__["created_at"].isoformat() if record.__dict__["created_at"] else ""
             ))
         
         return wallet_info_list
