@@ -64,11 +64,11 @@ const LossCheck: React.FC = () => {
       // 기존 더미 데이터
       const dummyTickers = [
         {
-          symbol: 'BTC',
-          name: 'Bitcoin',
+          symbol: 'PEPE',
+          name: 'Pepe',
           lossAmount: -1500,
           lossPercentage: -25.5,
-          lastTradeDate: '2024-01-15',
+          lastTradeDate: '2025-03-21',
           currentBalance: 0.05,
           averageBuyPrice: 30000,
           averageSellPrice: 30000,
@@ -79,11 +79,11 @@ const LossCheck: React.FC = () => {
           totalSoldUSD: 1500
         },
         {
-          symbol: 'ETH',
-          name: 'Ethereum',
+          symbol: 'DOGE',
+          name: 'Dogecoin',
           lossAmount: -800,
           lossPercentage: -18.2,
-          lastTradeDate: '2024-01-20',
+          lastTradeDate: '2025-07-06',
           currentBalance: 2.5,
           averageBuyPrice: 2000,
           averageSellPrice: 2000,
@@ -94,11 +94,11 @@ const LossCheck: React.FC = () => {
           totalSoldUSD: 5000
         },
         {
-          symbol: 'SOL',
-          name: 'Solana',
+          symbol: 'ETH',
+          name: 'Ethereum',
           lossAmount: -300,
-          lossPercentage: -45.0,
-          lastTradeDate: '2024-01-25',
+          lossPercentage: -15.0,
+          lastTradeDate: '2025-07-12',
           currentBalance: 50,
           averageBuyPrice: 100,
           averageSellPrice: 100,
@@ -245,169 +245,28 @@ const LossCheck: React.FC = () => {
   }
 
   return (
-    <div className="loss-check">
-      <header className="loss-check-header">
-        <button 
-          onClick={() => navigate('/')}
-          className="back-button"
-        >
-          ← 뒤로 가기
-        </button>
-        <h1>내 손실 확인</h1>
-        <p className="wallet-address">지갑: {address}</p>
-        
-        <div className="analysis-mode-selector">
-          <button 
-            onClick={() => {
-              setAnalysisMode('dummy');
-              fetchDummyData();
-            }}
-            className={analysisMode === 'dummy' ? 'active' : ''}
-          >
-            더미 데이터
-          </button>
-          <button 
-            onClick={() => {
-              setAnalysisMode('real');
-              setShowTokenSelector(true);
-            }}
-            className={analysisMode === 'real' ? 'active' : ''}
-          >
-            실제 트랜잭션
-          </button>
-        </div>
-
-        {/* 코인 선택 UI */}
-        {analysisMode === 'real' && (
-          <div className="token-selector-section">
-            <div className="token-selector-header">
-              <h3>분석할 코인 선택</h3>
-              <div className="token-selector-buttons">
-                <button 
-                  onClick={() => setShowTokenSelector(!showTokenSelector)}
-                  className="toggle-selector-btn"
-                >
-                  {showTokenSelector ? '선택창 닫기' : '코인 선택'}
-                </button>
-                {selectedTokens.length > 0 && (
-                  <button 
-                    onClick={handleAnalyzeSelected}
-                    className="analyze-selected-btn"
-                  >
-                    선택된 코인 분석 ({selectedTokens.length}개)
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {showTokenSelector && (
-              <div className="token-selector">
-                <div className="token-selector-controls">
-                  <input
-                    type="text"
-                    placeholder="코인 검색..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="token-search"
-                  />
-                  <div className="token-selector-actions">
-                    <button onClick={handleSelectAll} className="select-all-btn">
-                      전체 선택
-                    </button>
-                    <button onClick={handleClearSelection} className="clear-btn">
-                      선택 해제
-                    </button>
-                  </div>
-                </div>
-
-                <div className="selected-tokens">
-                  {selectedTokens.length > 0 && (
-                    <div className="selected-tokens-list">
-                      <h4>선택된 코인 ({selectedTokens.length}개):</h4>
-                      <div className="selected-tokens-chips">
-                        {selectedTokens.map(token => (
-                          <span key={token} className="token-chip">
-                            {token}
-                            <button 
-                              onClick={() => handleTokenSelect(token)}
-                              className="remove-token-btn"
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="token-list">
-                  <h4>사용 가능한 코인:</h4>
-                  <div className="token-grid">
-                    {filteredTokens.map(token => (
-                      <button
-                        key={token}
-                        onClick={() => handleTokenSelect(token)}
-                        className={`token-item ${selectedTokens.includes(token) ? 'selected' : ''}`}
-                      >
-                        {token}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {selectedTokens.length > 0 && !showTokenSelector && (
-              <div className="selected-tokens-summary">
-                <p>선택된 코인: {selectedTokens.join(', ')}</p>
-                <button onClick={handleAnalyzeSelected} className="analyze-btn">
-                  분석 시작
-                </button>
-              </div>
-            )}
-
-            {selectedTokens.length === 0 && !showTokenSelector && (
-              <div className="no-selection-summary">
-                <p>분석할 코인을 선택하거나 전체 분석을 진행하세요.</p>
-                <button onClick={handleAnalyzeSelected} className="analyze-all-btn">
-                  전체 코인 분석
-                </button>
-              </div>
-            )}
+    <div style={{ minHeight: '100vh', background: '#191c23' }}>
+      {/* 좌측 상단 뒤로 가기 버튼 */}
+      <button className="btn-main losscheck-back-small" onClick={() => navigate('/')}>
+        ←
+      </button>
+      {/* 중앙 상단 '내 지갑 손실률 조회' 버튼 */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32, marginBottom: 32 }}>
+        <button className="btn-main losscheck-main-btn">내 지갑 손실률 조회</button>
+      </div>
+      {/* 손실률 카드 리스트 */}
+      <div className="losscheck-list">
+        {tickers.map(ticker => (
+          <div className="losscheck-card" key={ticker.symbol}>
+            <div style={{fontWeight:700, fontSize:'1.1rem'}}>{ticker.symbol}</div>
+            <div style={{color:'#bdbdbd', fontSize:'0.95rem'}}>{ticker.name}</div>
+            <div>손실: <span className="amount">${ticker.lossAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
+            <div>{ticker.lossPercentage.toFixed(2)}%</div>
+            <div>마지막 거래: {ticker.lastTradeDate}</div>
+            <button className="btn-main btn-nft" onClick={() => handleMintNFT(ticker)}>NFT 발행</button>
           </div>
-        )}
-      </header>
-
-      <main className="loss-check-main">
-        {loading ? (
-          <div className="loading">
-            <p>
-              {analysisMode === 'real' 
-                ? '실제 트랜잭션을 분석하고 있습니다...' 
-                : '손실 내역을 조회하고 있습니다...'
-              }
-            </p>
-          </div>
-        ) : error ? (
-          <div className="error">
-            <p>{error}</p>
-          </div>
-        ) : (
-          <div className="losscheck-list">
-            {tickers.map(ticker => (
-              <div className="losscheck-card" key={ticker.symbol}>
-                <div style={{fontWeight:700, fontSize:'1.1rem'}}>{ticker.symbol}</div>
-                <div style={{color:'#bdbdbd', fontSize:'0.95rem'}}>{ticker.name}</div>
-                <div>손실: <span className="amount">${ticker.lossAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-                <div>{ticker.lossPercentage.toFixed(2)}%</div>
-                <div>마지막 거래: {ticker.lastTradeDate}</div>
-                <button className="btn-main btn-nft" onClick={() => handleMintNFT(ticker)}>NFT 발행</button>
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
+        ))}
+      </div>
     </div>
   );
 };

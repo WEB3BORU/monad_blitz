@@ -118,6 +118,36 @@ body {
   right: 24px;
 }
 
+.losscheck-back-small {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 20;
+  padding: 6px 14px;
+  font-size: 1.05rem;
+  border-radius: 8px;
+  min-width: unset;
+  height: 32px;
+  background: #232634;
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  font-weight: 600;
+}
+.losscheck-main-btn {
+  font-size: 1.15rem;
+  padding: 16px 38px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #4f8cff 0%, #6e6bff 100%);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 12px rgba(79,140,255,0.10);
+  margin-bottom: 0;
+}
+.losscheck-main-btn:hover {
+  background: linear-gradient(90deg, #6e6bff 0%, #4f8cff 100%);
+  box-shadow: 0 4px 16px rgba(79,140,255,0.16);
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   background: #232634;
