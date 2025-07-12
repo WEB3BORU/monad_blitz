@@ -3,6 +3,7 @@
 
 from .user import UserModel, User, UserCreate, UserUpdate, UserRole
 from .loss import LossModel, Loss, LossCreate, LossUpdate, LossStatus
+from .wallet_info import WalletInfoModel, WalletInfo, WalletInfoCreate, WalletInfoUpdate
 
 # 외부에서 import할 수 있는 모델들
 __all__ = [
@@ -19,4 +20,10 @@ __all__ = [
     "LossCreate",     # Pydantic 손실 데이터 생성 모델 (API 요청용)
     "LossUpdate",     # Pydantic 손실 데이터 업데이트 모델 (API 요청용)
     "LossStatus",     # 손실 데이터 상태 Enum
+    
+    # WalletInfo 관련 모델들
+    "WalletInfoModel",    # SQLAlchemy 지갑 정보 모델 (데이터베이스 테이블과 매핑)
+    "WalletInfo",        # Pydantic 지갑 정보 응답 모델 (API 응답용)
+    "WalletInfoCreate",  # Pydantic 지갑 정보 생성 모델 (API 요청용)
+    "WalletInfoUpdate",  # Pydantic 지갑 정보 업데이트 모델 (API 요청용)
 ] 

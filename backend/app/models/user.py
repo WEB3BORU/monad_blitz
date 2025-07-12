@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Numeric, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.database import Base
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -47,6 +48,9 @@ class UserModel(Base):
     # 타임스탬프
     created_at = Column(DateTime(timezone=True), server_default=func.now())      # 계정 생성 시간
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())  # 정보 수정 시간
+    
+    # 관계 설정 (주석 처리 - 현재는 단순한 구조로)
+    # wallet_info = relationship("WalletInfoModel", back_populates="user")
 
 
 # Pydantic Models (API 요청/응답 데이터 검증용)
