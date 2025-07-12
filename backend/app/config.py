@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
+from pydantic import Field
 
 
 class Settings(BaseSettings):
@@ -12,7 +13,7 @@ class Settings(BaseSettings):
     
     # Web3 Configuration
     monad_rpc_url: Optional[str] = None
-    monad_chain_id: int
+    monad_chain_id: int = Field(default=10143, alias="MONAD_TESTNET_CHAIN_ID")
     private_key: Optional[str] = None
     
     # JWT Configuration (POC에서는 사용하지 않음)
@@ -47,9 +48,12 @@ class Settings(BaseSettings):
         if not self.database_url:
             self.database_url = f"postgresql://{self.postgres_user}:{self.postgres_password}@localhost:{self.postgres_port}/{self.postgres_db}"
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = {
+        "env_file": ".env",
+        "case_sensitive": False,
+        "extra": "ignore",  # 추가 필드 무시
+        "env_prefix": "",   # 환경 변수 접두사 없음
+    }
 
 
 settings = Settings() 

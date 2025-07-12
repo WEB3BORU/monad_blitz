@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Numeric
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -25,10 +25,19 @@ class WalletInfoModel(Base):
     # 지갑 정보
     wallet_address = Column(String(42), nullable=False, index=True)
     
-    # 손실 정보
-    loss_rate = Column(Float, nullable=False)  # 손실률 (퍼센트)
-    loss_amount = Column(Float, nullable=False)  # 손실 금액 (MON 기준)
-    ticker = Column(String(10), nullable=False)  # 자산 티커
+    # 자산 정보
+    ticker = Column(String(10), nullable=False, index=True)  # 자산 티커
+    
+    # 거래 정보
+    avg_buyprice = Column(Numeric(20, 8), default=0.0, nullable=False)  # 평균 매수가
+    avg_sellprice = Column(Numeric(20, 8), default=0.0, nullable=False)  # 평균 매도가
+    current_price = Column(Numeric(20, 8), default=0.0, nullable=False)  # 현재가
+    total_buyprice = Column(Numeric(20, 8), default=0.0, nullable=False)  # 총 매수금액
+    total_sellprice = Column(Numeric(20, 8), default=0.0, nullable=False)  # 총 매도금액
+    
+    # 손실 정보 (자동 계산됨)
+    loss_rate = Column(Float, nullable=False, default=0.0)  # 손실률 (퍼센트)
+    loss_amount = Column(Numeric(20, 8), default=0.0, nullable=False)  # 손실 금액 (MON 기준)
     
     # 타임스탬프
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -42,9 +51,12 @@ class WalletInfoModel(Base):
 class WalletInfoBase(BaseModel):
     """지갑 정보 기본 모델"""
     wallet_address: str = Field(..., description="지갑 주소")
-    loss_rate: float = Field(..., description="손실률 (퍼센트)")
-    loss_amount: float = Field(..., description="손실 금액 (MON 기준)")
     ticker: str = Field(..., description="자산 티커")
+    avg_buyprice: float = Field(default=0.0, description="평균 매수가")
+    avg_sellprice: float = Field(default=0.0, description="평균 매도가")
+    current_price: float = Field(default=0.0, description="현재가")
+    total_buyprice: float = Field(default=0.0, description="총 매수금액")
+    total_sellprice: float = Field(default=0.0, description="총 매도금액")
 
 
 class WalletInfoCreate(WalletInfoBase):
@@ -55,8 +67,12 @@ class WalletInfoCreate(WalletInfoBase):
 
 class WalletInfoUpdate(BaseModel):
     """지갑 정보 업데이트 요청 모델"""
-    loss_rate: Optional[float] = None
     ticker: Optional[str] = None
+    avg_buyprice: Optional[float] = None
+    avg_sellprice: Optional[float] = None
+    current_price: Optional[float] = None
+    total_buyprice: Optional[float] = None
+    total_sellprice: Optional[float] = None
 
 
 class WalletInfo(WalletInfoBase):
@@ -65,6 +81,8 @@ class WalletInfo(WalletInfoBase):
     uuid: str
     user_id: int
     user_uuid: str
+    loss_rate: float = Field(default=0.0, description="손실률 (퍼센트)")
+    loss_amount: float = Field(default=0.0, description="손실 금액 (MON 기준)")
     created_at: datetime
     updated_at: datetime
     
@@ -74,4 +92,28 @@ class WalletInfo(WalletInfoBase):
 
 class WalletInfoInDB(WalletInfo):
     """데이터베이스 내 지갑 정보 (내부 처리용)"""
-    pass 
+    pass
+
+
+class WalletInfoSummary(BaseModel):
+    """지갑 정보 요약 모델 (계산된 필드 포함)"""
+    id: int
+    uuid: str
+    user_id: int
+    user_uuid: str
+    wallet_address: str
+    ticker: str
+    loss_rate: float
+    avg_buyprice: float
+    avg_sellprice: float
+    current_price: float
+    total_buyprice: float
+    total_sellprice: float
+    loss_amount: float
+    unrealized_pnl_percent: float = Field(description="미실현 손익률")
+    unrealized_pnl_amount: float = Field(description="미실현 손익금액")
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True 
